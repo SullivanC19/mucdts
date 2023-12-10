@@ -8,6 +8,7 @@
 
 #include <forward_list>
 #include <vector>
+#include <utility>
 #include <array>
 
 #include "cache/approx_bitset_cache.h"
@@ -19,24 +20,21 @@
 struct AndNode;
 
 struct OrNode {
-  double trueValue;
-  double stopValue;
-  double totalValueEstimate;
+  float trueValue;
+  float stopValue;
+  float totalValueEstimate;
   size_t numVisits;
-  std::vector<size_t> numVisitsToEachChild;
   std::vector<size_t> numVisitsToEachActionInSubtree;
-  std::vector<double> childrenTotalValueEstimates;
-  std::vector<double> actionsTotalValueEstimates;
-  double beta() const;
-  double actionSubtreeValueEstimate(size_t action) const;
-  double UCB1ValueEstimate(size_t action) const;
+  std::vector<float> actionsTotalValueEstimates;
+  std::vector<AndNode *> children;
+  std::forward_list<AndNode *> parents;
 };
 
 struct AndNode {
+  OrNode *parent;
   size_t feature;
   OrNode *left;
   OrNode *right;
-  OrNode *parent;
 };
 
 class MUCDTSearch {
@@ -46,7 +44,7 @@ class MUCDTSearch {
       cfg_(cfg),
       subproblem_(dm_),
       cache_(NUM_BLOCKS(dm.getNumSamples())),
-      rootNode_(buildNode(subproblem_.getLabelCounts(), 0))
+      rootNode_(buildNode(subproblem_.getLabelCounts()))
       {}
     Solution search();
   private:
@@ -58,10 +56,9 @@ class MUCDTSearch {
     std::forward_list<OrNode *> orNodes_ = std::forward_list<OrNode *>();
     std::forward_list<AndNode *> andNodes_ = std::forward_list<AndNode *>();
 
-    OrNode *buildNode(const std::array<int, 2>& labelCounts, size_t depth);
-    OrNode *findExpansion();
-    void expand(OrNode *node);
-    void backpropagate(OrNode *source);
+    OrNode *buildNode(const std::array<int, 2>& labelCounts);
+    std::pair<float, std::vector<std::pair<size_t, float>>> findTree(OrNode *node);
+    std::vector<float> getValidSplitUCB1Values(OrNode *node, const std::vector<size_t>& validSplits) const;
     DecisionTree *buildDecisionTree(OrNode *node);
 };
 

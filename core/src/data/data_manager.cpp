@@ -35,4 +35,12 @@ void DataManager::buildLabelMasks(const std::vector<bool>& labels) {
     labelMasks_[1].setBits(labelValues);
     labelValues.flip();
     labelMasks_[0].setBits(labelValues);
+
+    for (size_t i = 0; i < numSamples_; i++) {
+        if (labels[i]) {
+            numPositiveLabels_++;
+        } else {
+            numNegativeLabels_++;
+        }
+    }
 }

@@ -63,6 +63,12 @@
     "unordered_map": "cpp",
     "variant": "cpp",
     "__verbose_abort": "cpp",
-    "forward_list": "cpp"
+    "forward_list": "cpp",
+    "__memory": "cpp",
+    "deque": "cpp",
+    "functional": "cpp",
+    "set": "cpp",
+    "__tree": "cpp",
+    "queue": "cpp"
   }
 }

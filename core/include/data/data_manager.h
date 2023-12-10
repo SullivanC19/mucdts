@@ -51,6 +51,20 @@ class DataManager {
         size_t getNumSamples() const;
 
         /**
+         * @brief Returns the number of samples with positive labels.
+         */
+        size_t getNumPositiveLabels() const {
+            return numPositiveLabels_;
+        };
+
+        /**
+         * @brief Returns the number of samples with negative labels.
+         */
+        size_t getNumNegativeLabels() const {
+            return numNegativeLabels_;
+        };
+
+        /**
          * @brief Returns the mask for the provided feature and feature value.
          * @param feature The feature to get the mask for.
          * @param value The feature value to get the mask for.
@@ -75,6 +89,8 @@ class DataManager {
         size_t numSamples_;
         std::vector<FixedBitset> featureMasks_;
         std::vector<FixedBitset> labelMasks_;
+        size_t numPositiveLabels_ = 0;
+        size_t numNegativeLabels_ = 0;
 
         void buildFeatureMasks(const std::vector<std::vector<bool>>& features);
         void buildLabelMasks(const std::vector<bool>& labels);
